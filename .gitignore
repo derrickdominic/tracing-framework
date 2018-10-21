@@ -74,3 +74,5 @@ build-test/
 ./manifest.json
 hydrogen.cfg
 *.wtf-trace
+test_wtf
+test_wtf_c
