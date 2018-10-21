@@ -5,13 +5,20 @@
 
 const char kTraceFile[] = "test_wtf_c.wtf-trace";
 
-void Process() {
-  // WTF_C_SCOPE0("Process");
+struct WtfScopedEventIf;
 
-  for (int i = 0; i < 10; i++) {
-    if (i == 5) {
-      // WTF_C_EVENT0("ProcessMidPoint");
-    }
+void Process() {
+  // static CScopedEvent event("Process");
+  // CScope scope(event);
+  // scope.Enter();
+  
+  
+  // scope.Leave();
+
+  // static WtfScopedEventIf scoped_event;
+  //"Process"};
+
+  for (int i = 0; i < 5; i++) {
     usleep(5);
   }
 }
@@ -19,7 +26,10 @@ void Process() {
 int main(void) {
   wtf_c_thread_enable("main");
 
-  Process();
+  for (int i = 0; i < 5; i++) {
+    Process();
+    usleep(5);
+  }
 
   if (!wtf_c_save_to_file(kTraceFile)) {
     fprintf(stderr, "Error saving trace as file %s", kTraceFile);
