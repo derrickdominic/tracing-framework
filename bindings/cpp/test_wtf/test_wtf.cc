@@ -1,33 +1,58 @@
-#include <wtf/macros.h>
-#include <iostream>
+// https://en.cppreference.com/w/cpp/thread/thread/thread
+//
+// Expected output:
+//   Thread 1 executing
+//   Thread 2 executing
+//   Thread 1 executing
+//   Thread 2 executing
+//   Thread 1 executing
+//   Thread 2 executing
+//   Thread 1 executing
+//   Thread 2 executing
+//   Thread 2 executing
+//   Thread 1 executing
+//   Final value of n is 5
+
 #include <unistd.h>
+#include <iostream>
+#include <thread>
+#include <utility>
+#include <wtf/macros.h>
 
-constexpr char kTraceFile[] = "test.wtf-trace";
-
-void Process() {
-  WTF_SCOPE0("Process");
-  std::cout << "Process\n";
-  for (int i = 0; i < 100; i++) {
-    if (i == 50) {
-      WTF_EVENT0("ProcessMidPoint");
-      std::cout << "ProcessMidPoint\n";
-    }
-    usleep(5);
-  }
+constexpr char kTraceFile[] = "test-wtf.wtf-trace";
+ 
+void A(int a) {
+  WTF_SCOPE("A: a", int)(a);
+  usleep(50000);
 }
-
-int main(void) {
-  WTF_THREAD_ENABLE("Main");
-  std::cout << "Main\n";
-
-  Process();
-
-  // Save a trace.
-  std::cout << "Saving the trace\n";
+ 
+void B(int b) {
+  WTF_SCOPE("B: b", int)(b);
+  usleep(100000);
+}
+ 
+int main() {
+  WTF_THREAD_ENABLE("main");
+  WTF_SCOPE0("main");
+  
+  std::thread t1(
+      [](int n) { 
+        WTF_THREAD_ENABLE("t1");
+        A(n);
+      }, 10);
+  std::thread t2(
+      [](int n) { 
+        WTF_THREAD_ENABLE("t2");
+        B(n);
+      }, 10);
+  
+  t1.join();
+  t2.join();
+  
   if (!wtf::Runtime::GetInstance()->SaveToFile(kTraceFile)) {
     std::cerr << "Error saving file: " << kTraceFile;
     return 1;
   }
-
+  
   return 0;
 }
