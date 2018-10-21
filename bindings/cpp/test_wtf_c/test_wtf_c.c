@@ -7,7 +7,6 @@ const char kTraceFile[] = "test_wtf_c.wtf-trace";
 
 void Process() {
   // WTF_C_SCOPE0("Process");
-  wtf_scope0("Process");
 
   for (int i = 0; i < 10; i++) {
     if (i == 5) {
@@ -18,14 +17,14 @@ void Process() {
 }
 
 int main(void) {
-  // WTF_C_THREAD_ENABLE("Main");
+  wtf_c_thread_enable("main");
 
   Process();
 
-  // if (!wtf::Runtime::GetInstance()->SaveToFile(kTraceFile)) {
-  //   fprintf(stderr, "Error saving file: %s", kTraceFile);
-  //   return 1;
-  // }
+  if (!wtf_c_save_to_file(kTraceFile)) {
+    fprintf(stderr, "Error saving trace as file %s", kTraceFile);
+    return 1;
+  }
 
   return 0;
 }
