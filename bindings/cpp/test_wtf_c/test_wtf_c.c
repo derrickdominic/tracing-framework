@@ -8,7 +8,7 @@ const char kTraceFile[] = "test_wtf_c.wtf-trace";
 void Process() {
   // WTF_C_SCOPE0("Process");
   wtf_scope0("Process");
-  
+
   for (int i = 0; i < 10; i++) {
     if (i == 5) {
       // WTF_C_EVENT0("ProcessMidPoint");
